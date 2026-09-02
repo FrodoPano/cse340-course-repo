@@ -1,6 +1,22 @@
-
-    <footer>
-        <p>&copy; <%= new Date().getFullYear() %> CSE 340 Service Network.</p>
+    </div>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>&copy; <%= new Date().getFullYear() %> CSE 340 Service Network. All rights reserved.</p>
+            <p class="footer-tagline">Connecting volunteers with opportunities to serve.</p>
+        </div>
     </footer>
+    <script>
+        // Mobile menu toggle
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (mobileMenuToggle && navMenu) {
+            mobileMenuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                const isExpanded = navMenu.classList.contains('active');
+                mobileMenuToggle.setAttribute('aria-expanded', isExpanded);
+            });
+        }
+    </script>
 </body>
 </html>
