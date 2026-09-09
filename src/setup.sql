@@ -59,3 +59,76 @@ VALUES
 (3, 'Clothing Drive', 'Help collect, sort, and distribute clothing donations.', 'UnityServe Center', '2026-10-02'),
 (3, 'Thanksgiving Meal Service', 'Prepare and serve Thanksgiving meals to those in need.', 'Community Kitchen', '2026-11-20'),
 (3, 'Holiday Toy Drive', 'Sort and wrap toys for children in need.', 'UnityServe Warehouse', '2026-12-10');
+
+-- ========================================
+-- Category Table
+-- ========================================
+CREATE TABLE category (
+    category_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+-- ========================================
+-- Project-Category Junction Table
+-- ========================================
+CREATE TABLE project_category (
+    project_id INTEGER NOT NULL,
+    category_id INTEGER NOT NULL,
+    PRIMARY KEY (project_id, category_id),
+    FOREIGN KEY (project_id) REFERENCES service_project(project_id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE
+);
+
+-- ========================================
+-- Insert sample data: Categories
+-- ========================================
+INSERT INTO category (name)
+VALUES
+('Environmental'),
+('Educational'),
+('Community Service'),
+('Health and Wellness');
+
+-- ========================================
+-- Associate projects with categories
+-- ========================================
+-- BrightFuture Builders projects (project_id 1-5)
+INSERT INTO project_category (project_id, category_id)
+VALUES
+-- Community Garden Build (1) - Environmental
+(1, 1),
+-- Playground Renovation (2) - Community Service
+(2, 3),
+-- Habitat for Humanity Build Day (3) - Community Service
+(3, 3),
+-- Park Bench Installation (4) - Environmental
+(4, 1),
+-- Community Center Repair (5) - Community Service
+(5, 3),
+
+-- GreenHarvest Growers projects (project_id 6-10)
+-- Urban Farm Planting Day (6) - Environmental, Educational
+(6, 1),
+(6, 2),
+-- Farmers Market Setup (7) - Community Service
+(7, 3),
+-- School Garden Workshop (8) - Educational
+(8, 2),
+-- Composting Education Session (9) - Environmental, Educational
+(9, 1),
+(9, 2),
+-- Harvest Festival (10) - Community Service
+(10, 3),
+
+-- UnityServe Volunteers projects (project_id 11-15)
+-- Food Bank Sorting (11) - Community Service
+(11, 3),
+-- Senior Center Visit (12) - Community Service, Health and Wellness
+(12, 3),
+(12, 4),
+-- Clothing Drive (13) - Community Service
+(13, 3),
+-- Thanksgiving Meal Service (14) - Community Service
+(14, 3),
+-- Holiday Toy Drive (15) - Community Service
+(15, 3);
