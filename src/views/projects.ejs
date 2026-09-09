@@ -5,11 +5,21 @@
     <h1><%= title %></h1>
 
     <h2>Upcoming Service Projects</h2>
-    <ul>
-        <li>Park Cleanup - Join us to clean up local parks and make them beautiful!</li>
-        <li>Food Drive - Help collect and distribute food to those in need.</li>
-        <li>Community Tutoring - Volunteer to tutor students in various subjects.</li>
-    </ul>
+    
+    <% if (typeof projects !== 'undefined' && projects.length > 0) { %>
+        <ul class="projects-list">
+            <% projects.forEach(project => { %>
+                <li>
+                    <strong><%= project.formatted_date %>: <%= project.title %></strong> 
+                    (<%= project.organization_name %>)
+                    <p><%= project.description %></p>
+                    <p><small>Location: <%= project.location %></small></p>
+                </li>
+            <% }); %>
+        </ul>
+    <% } else { %>
+        <p>No service projects found. Please check back soon!</p>
+    <% } %>
 
 </main>
 

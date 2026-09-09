@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { testConnection } from './src/models/db.js';
 import { getAllOrganizations } from './src/models/organizations.js';
+import { getAllProjects } from './src/models/projects.js';
 
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
@@ -12,6 +13,12 @@ const PORT = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Helper function to format dates
+const formatDate = (date) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(date).toLocaleDateString('en-US', options);
+};
 
 const app = express();
 
@@ -44,8 +51,17 @@ app.get('/organizations', async (req, res) => {
 });
 
 app.get('/projects', async (req, res) => {
+    const projects = await getAllProjects();
+    
+    // Format dates for display
+    const formattedProjects = projects.map(project => ({
+        ...project,
+        formatted_date: formatDate(project.project_date)
+    }));
+    
     const title = 'Service Projects';
-    res.render('projects', { title });
+    
+    res.render('projects', { title, projects: formattedProjects });
 });
 
 app.get('/categories', async (req, res) => {
