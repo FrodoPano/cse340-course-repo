@@ -3,12 +3,11 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import dotenv from 'dotenv';
 import { testConnection } from './src/models/db.js';
-import { getAllOrganizations } from './src/models/organizations.js';
-import { getAllProjects } from './src/models/projects.js';
-import { getAllCategories } from './src/models/categories.js';
+import router from './src/routes.js';
 
 // Load environment variables
 dotenv.config();
+
 // Define the application environment
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 
@@ -17,8 +16,6 @@ const PORT = process.env.PORT || 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-
 
 const app = express();
 
@@ -29,24 +26,17 @@ const app = express();
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Set EJS as the templating engine
-app.set('view engine', 'ejs');
+// Parse JSON bodies
+app.use(express.json());
 
-// Tell Express where to find your templates
-app.set('views', path.join(__dirname, 'src/views'));
-
-// Helper function to format dates
-const formatDate = (date) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(date).toLocaleDateString('en-US', options);
-};
+// Parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
 
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
 
 // Tell Express where to find your templates
 app.set('views', path.join(__dirname, 'src/views'));
-
 
 // Middleware to log all incoming requests
 app.use((req, res, next) => {
@@ -62,43 +52,8 @@ app.use((req, res, next) => {
     next();
 });
 
-
-
-/**
-  * Routes
-  */
-app.get('/', async (req, res) => {
-    const title = 'Home';
-    res.render('home', { title });
-});
-
-app.get('/organizations', async (req, res) => {
-    const organizations = await getAllOrganizations();
-    const title = 'Our Partner Organizations';
-
-    res.render('organizations', { title, organizations });
-});
-
-app.get('/projects', async (req, res) => {
-    const projects = await getAllProjects();
-    
-    // Format dates for display
-    const formattedProjects = projects.map(project => ({
-        ...project,
-        formatted_date: formatDate(project.project_date)
-    }));
-    
-    const title = 'Service Projects';
-    
-    res.render('projects', { title, projects: formattedProjects });
-});
-
-app.get('/categories', async (req, res) => {
-    const categories = await getAllCategories();
-    const title = 'Service Project Categories';
-    
-    res.render('categories', { title, categories });
-});
+// Use the imported router to handle routes
+app.use(router);
 
 // Catch-all route for 404 errors
 app.use((req, res, next) => {
@@ -129,11 +84,11 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, async () => {
-    try {
-        await testConnection();
-        console.log(`Server is running at http://127.0.0.1:${PORT}`);
-        console.log(`Environment: ${NODE_ENV}`);
-    } catch (error) {
-        console.error('Error connecting to the database:', error);
-    }
+  try {
+    await testConnection();
+    console.log(`Server is running at http://127.0.0.1:${PORT}`);
+    console.log(`Environment: ${NODE_ENV}`);
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+  }
 });
