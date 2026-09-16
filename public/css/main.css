@@ -366,3 +366,31 @@ a:hover {
         padding: 0;
     }
 }
+
+/* Category tags on project page */
+.category-tags {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.category-tags li {
+    display: inline-block;
+}
+
+.category-tag {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    background: var(--secondary-color);
+    color: var(--white) !important;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.category-tag:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}

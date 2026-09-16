@@ -1,5 +1,6 @@
 // Import any needed model functions
 import { getUpcomingProjects, getProjectDetails } from '../models/projects.js';
+import { getCategoriesByProjectId } from '../models/categories.js';
 
 // Define any constants
 const NUMBER_OF_UPCOMING_PROJECTS = 5;
@@ -36,6 +37,9 @@ const showProjectDetailsPage = async (req, res, next) => {
         return next(err);
     }
     
+    // Get the categories for this project
+    const categories = await getCategoriesByProjectId(projectId);
+    
     // Format the date for display
     const formattedDate = formatDate(projectDetails.project_date);
     
@@ -46,7 +50,8 @@ const showProjectDetailsPage = async (req, res, next) => {
         projectDetails: { 
             ...projectDetails, 
             formatted_date: formattedDate 
-        } 
+        },
+        categories
     });
 };
 
