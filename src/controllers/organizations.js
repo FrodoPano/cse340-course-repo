@@ -1,5 +1,5 @@
 // Import any needed model functions
-import { getAllOrganizations, getOrganizationDetails, createOrganization } from '../models/organizations.js';
+import { getAllOrganizations, getOrganizationDetails, createOrganization, updateOrganization } from '../models/organizations.js';
 import { getProjectsByOrganizationId } from '../models/projects.js';
 import { body, validationResult } from 'express-validator';
 
@@ -22,7 +22,13 @@ const organizationValidation = [
         .notEmpty()
         .withMessage('Contact email is required')
         .isEmail()
-        .withMessage('Please provide a valid email address')
+        .withMessage('Please provide a valid email address'),
+    body('logoFilename')
+        .trim()
+        .notEmpty()
+        .withMessage('Logo filename is required')
+        .isLength({ max: 255 })
+        .withMessage('Logo filename cannot exceed 255 characters')
 ];
 
 // Define any controller functions
@@ -37,7 +43,6 @@ const showOrganizationDetailsPage = async (req, res, next) => {
     const organizationId = req.params.id;
     const organizationDetails = await getOrganizationDetails(organizationId);
     
-    // If no organization found, forward a 404 error
     if (!organizationDetails) {
         const err = new Error('Organization Not Found');
         err.status = 404;
@@ -47,7 +52,7 @@ const showOrganizationDetailsPage = async (req, res, next) => {
     const projects = await getProjectsByOrganizationId(organizationId);
     const title = 'Organization Details';
 
-    res.render('organization', {title, organizationDetails, projects});
+    res.render('organization', { title, organizationDetails, projects });
 };
 
 const showNewOrganizationForm = async (req, res) => {
@@ -60,28 +65,63 @@ const processNewOrganizationForm = async (req, res) => {
     // Check for validation errors
     const results = validationResult(req);
     if (!results.isEmpty()) {
-        // Validation failed - loop through errors
         results.array().forEach((error) => {
             req.flash('error', error.msg);
         });
 
-        // Redirect back to the new organization form
         return res.redirect('/new-organization');
     }
 
     const { name, description, contactEmail } = req.body;
-    const logoFilename = 'placeholder-logo.png'; // Use the placeholder logo for all new organizations    
+    const logoFilename = 'placeholder-logo.png';
 
     const organizationId = await createOrganization(name, description, contactEmail, logoFilename);
     req.flash('success', 'Organization added successfully!');
     res.redirect(`/organization/${organizationId}`);
 };
 
+const showEditOrganizationForm = async (req, res, next) => {
+    const organizationId = req.params.id;
+    const organizationDetails = await getOrganizationDetails(organizationId);
+
+    if (!organizationDetails) {
+        const err = new Error('Organization Not Found');
+        err.status = 404;
+        return next(err);
+    }
+
+    const title = 'Edit Organization';
+    res.render('edit-organization', { title, organizationDetails });
+};
+
+const processEditOrganizationForm = async (req, res) => {
+    // Check for validation errors
+    const results = validationResult(req);
+    if (!results.isEmpty()) {
+        results.array().forEach((error) => {
+            req.flash('error', error.msg);
+        });
+
+        return res.redirect('/edit-organization/' + req.params.id);
+    }
+
+    const organizationId = req.params.id;
+    const { name, description, contactEmail, logoFilename } = req.body;
+
+    await updateOrganization(organizationId, name, description, contactEmail, logoFilename);
+    
+    req.flash('success', 'Organization updated successfully!');
+
+    res.redirect(`/organization/${organizationId}`);
+};
+
 // Export any controller functions
-export { 
-    showOrganizationsPage, 
-    showOrganizationDetailsPage, 
-    showNewOrganizationForm, 
+export {
+    showOrganizationsPage,
+    showOrganizationDetailsPage,
+    showNewOrganizationForm,
     processNewOrganizationForm,
-    organizationValidation
+    organizationValidation,
+    showEditOrganizationForm,
+    processEditOrganizationForm
 };
