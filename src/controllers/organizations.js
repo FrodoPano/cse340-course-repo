@@ -24,11 +24,9 @@ const organizationValidation = [
         .isEmail()
         .withMessage('Please provide a valid email address'),
     body('logoFilename')
-        .trim()
-        .notEmpty()
-        .withMessage('Logo filename is required')
-        .isLength({ max: 255 })
-        .withMessage('Logo filename cannot exceed 255 characters')
+    .optional({ checkFalsy: true })
+    .trim()
+    .isLength({ max: 255 }).withMessage('Logo filename cannot exceed 255 characters')
 ];
 
 // Define any controller functions
@@ -106,7 +104,11 @@ const processEditOrganizationForm = async (req, res) => {
     }
 
     const organizationId = req.params.id;
-    const { name, description, contactEmail, logoFilename } = req.body;
+    const { name, description, contactEmail } = req.body;
+
+    // Fetch the existing organization to preserve its logo_filename
+    const existingOrganization = await getOrganizationDetails(organizationId);
+    const logoFilename = existingOrganization ? existingOrganization.logo_filename : 'placeholder-logo.png';
 
     await updateOrganization(organizationId, name, description, contactEmail, logoFilename);
     

@@ -37,21 +37,12 @@
       />
     </div>
 
-    <div class="form-group">
-      <label for="logoFilename">Logo Filename</label>
-      <input
-        type="text"
-        id="logoFilename"
-        name="logoFilename"
-        maxlength="255"
-        required
-        value="<%= organizationDetails.logo_filename %>"
-      />
-    </div>
-
 
     <button type="submit">Update Organization</button>
   </form>
+
+  <p><a href="/organization/<%= organizationDetails.organization_id %>">← Cancel and Go Back</a></p>
+</main>
 
 </main>
 <%- include('partials/footer') %>
