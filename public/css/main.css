@@ -504,3 +504,33 @@ form {
     font-weight: 500;
     margin: 0;
 }
+
+/* Current logo display on edit form */
+.current-logo-display {
+    background: var(--background-color);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.logo-preview {
+    max-width: 150px;
+    max-height: 150px;
+    display: block;
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius);
+    background: var(--white);
+    padding: 0.5rem;
+}
+
+.logo-filename,
+.logo-url {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    color: var(--text-light);
+    word-break: break-all;
+}
+
+.logo-url a {
+    color: var(--secondary-color);
+}

@@ -37,6 +37,26 @@
       />
     </div>
 
+    <!-- Current Logo (read-only display) -->
+    <div class="form-group">
+        <label>Current Logo</label>
+        <div class="current-logo-display">
+            <img 
+                src="/images/<%= organizationDetails.logo_filename %>" 
+                alt="<%= organizationDetails.name %> logo"
+                class="logo-preview"
+            />
+            <p class="logo-filename">
+                <strong>Filename:</strong> <%= organizationDetails.logo_filename %>
+            </p>
+            <p class="logo-url">
+                <strong>URL:</strong> 
+                <a href="/images/<%= organizationDetails.logo_filename %>" target="_blank">
+                    /images/<%= organizationDetails.logo_filename %>
+                </a>
+            </p>
+        </div>
+    </div>
 
     <button type="submit">Update Organization</button>
   </form>
