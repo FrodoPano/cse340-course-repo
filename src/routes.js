@@ -39,7 +39,8 @@ import {
     processLogout,
     requireLogin,
     requireRole,
-    showDashboard
+    showDashboard,
+    showUsersPage
 } from './controllers/users.js';
 
 import { testErrorPage } from './controllers/errors.js';
@@ -70,6 +71,9 @@ router.get('/dashboard', requireLogin, showDashboard);
 // ========================================
 // ADMIN-ONLY ROUTES
 // ========================================
+
+// Users list page (admin only)
+router.get('/users', requireRole('admin'), showUsersPage);
 
 // New organization
 router.get('/new-organization', requireRole('admin'), showNewOrganizationForm);
