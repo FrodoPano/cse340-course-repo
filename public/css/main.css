@@ -566,3 +566,85 @@ form {
 .users-table tbody tr:hover {
     background: var(--background-color);
 }
+
+/* Volunteer section on project page */
+.volunteer-section {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--accent-color);
+}
+
+.volunteer-status {
+    color: var(--accent-color);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+/* Button styles */
+.btn-primary,
+.btn-secondary,
+.btn-small {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    font-weight: 600;
+}
+
+.btn-primary {
+    padding: 0.75rem 1.5rem;
+    background: var(--accent-color);
+    color: var(--white);
+    font-size: 1rem;
+}
+
+.btn-primary:hover {
+    background: #219150;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    padding: 0.75rem 1.5rem;
+    background: #e74c3c;
+    color: var(--white);
+    font-size: 1rem;
+}
+
+.btn-secondary:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-small {
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+}
+
+/* Volunteer list on dashboard */
+.volunteer-list {
+    list-style: none;
+    padding: 0;
+}
+
+.volunteer-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.inline-form {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}

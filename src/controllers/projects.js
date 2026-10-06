@@ -3,14 +3,17 @@ import {
     getUpcomingProjects, 
     getProjectDetails, 
     createProject,
-    updateProject 
+    updateProject,
+    addVolunteer,
+    removeVolunteer,
+    isUserVolunteer
 } from '../models/projects.js';
 import { getAllOrganizations } from '../models/organizations.js';
 import { getCategoriesByProjectId } from '../models/categories.js';
 import { body, validationResult } from 'express-validator';
 
 // Define any constants
-const NUMBER_OF_UPCOMING_PROJECTS = 10;
+const NUMBER_OF_UPCOMING_PROJECTS = 5;
 
 // Define validation rules for project form
 const projectValidation = [
@@ -34,10 +37,20 @@ const projectValidation = [
         .isInt().withMessage('Organization must be a valid integer')
 ];
 
-// Helper function to format dates
+// Helper function to format dates for display
 const formatDate = (date) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(date).toLocaleDateString('en-US', options);
+};
+
+// Helper function to format dates for HTML date input (YYYY-MM-DD)
+const formatDateForInput = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 };
 
 // Define any controller functions
@@ -72,15 +85,23 @@ const showProjectDetailsPage = async (req, res, next) => {
     // Format the date for display
     const formattedDate = formatDate(projectDetails.project_date);
     
+    // Check if the logged-in user is already a volunteer
+    let userIsVolunteer = false;
+    if (req.session && req.session.user) {
+        userIsVolunteer = await isUserVolunteer(req.session.user.user_id, projectId);
+    }
+    
     const title = 'Project Details';
 
     res.render('project', { 
         title, 
         projectDetails: { 
             ...projectDetails, 
-            formatted_date: formattedDate 
+            formatted_date: formattedDate,
+            input_date: formatDateForInput(projectDetails.project_date)
         },
-        categories
+        categories,
+        userIsVolunteer
     });
 };
 
@@ -128,9 +149,15 @@ const showEditProjectForm = async (req, res, next) => {
 
     const organizations = await getAllOrganizations();
 
+    // Format the date for the HTML date input
+    const projectWithFormattedDate = {
+        ...projectDetails,
+        input_date: formatDateForInput(projectDetails.project_date)
+    };
+
     const title = 'Edit Service Project';
 
-    res.render('update-project', { title, projectDetails, organizations });
+    res.render('update-project', { title, projectDetails: projectWithFormattedDate, organizations });
 };
 
 const processEditProjectForm = async (req, res) => {
@@ -154,6 +181,26 @@ const processEditProjectForm = async (req, res) => {
     res.redirect(`/project/${projectId}`);
 };
 
+const processVolunteer = async (req, res) => {
+    const projectId = req.params.id;
+    const userId = req.session.user.user_id;
+
+    await addVolunteer(userId, projectId);
+
+    req.flash('success', 'You are now signed up to volunteer for this project!');
+    res.redirect(`/project/${projectId}`);
+};
+
+const processRemoveVolunteer = async (req, res) => {
+    const projectId = req.params.id;
+    const userId = req.session.user.user_id;
+
+    await removeVolunteer(userId, projectId);
+
+    req.flash('success', 'You have been removed as a volunteer for this project.');
+    res.redirect(`/project/${projectId}`);
+};
+
 // Export any controller functions
 export { 
     showProjectsPage, 
@@ -162,5 +209,7 @@ export {
     processNewProjectForm,
     projectValidation,
     showEditProjectForm,
-    processEditProjectForm
+    processEditProjectForm,
+    processVolunteer,
+    processRemoveVolunteer
 };
